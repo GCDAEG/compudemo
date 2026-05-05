@@ -34,7 +34,6 @@ export default async function Home() {
       {/* <Testimonials /> */}
       <CartDrawer />
       <WhatsAppChatInput />
-      <ExampleMessage />
     </main>
   );
 }

@@ -56,7 +56,7 @@ const ExampleMessage = () => {
             className="group relative w-48 h-12 transition-all duration-300 hover:brightness-125"
           >
             <Image
-              src="https://tuwebhoy-chi.vercel.app/twhlogo.svg"
+              src="https://i.postimg.cc/3NkBhMQF/TWHBASE-2000.png"
               alt="tuwebhoy"
               fill
               className="object-contain"
