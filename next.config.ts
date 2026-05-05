@@ -18,7 +18,7 @@ devIndicators: false,
       },
       {
         protocol:'https',
-        hostname:'placehold.co'
+        hostname:'fakestoreapi.com'
       },
       {
         protocol:'https',

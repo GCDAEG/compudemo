@@ -1,256 +1,254 @@
 "use client";
-import { Section } from "@/components/layout/Section";
+import React, { useState, useEffect, useMemo } from "react";
 import {
+  Search,
+  Plus,
+  X,
   ShoppingCart,
-  ArrowRight,
-  ShieldCheck,
-  MapPin,
-  Maximize,
-  Sparkles,
-  Box,
   Loader2,
+  CreditCard,
+  ShieldCheck,
+  Send,
+  CheckCircle2,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { useCart } from "@/context/CartContext";
 import Image from "next/image";
-import { SanityDocument } from "next-sanity";
-import { urlFor } from "@/lib/sanity.image";
-
-interface ProductCatalogProps {
-  posts: SanityDocument[];
+import { useLenis } from "lenis/react";
+import { useCart } from "@/context/CartContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast, Toaster } from "sonner";
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
 }
 
-const ProductCatalog: React.FC<ProductCatalogProps> = ({ posts }) => {
-  const WHATSAPP_NUMBER = "5493446000000";
+const ProductCatalog: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { addToCart } = useCart();
-  const [activeCategory, setActiveCategory] = useState("Todos");
 
-  // Usamos un pequeño estado de carga para la transición de entrada
-  const [isMounting, setIsMounting] = useState(true);
+  const lenis = useLenis();
 
   useEffect(() => {
-    const isMounting = () => {
-      setIsMounting(false);
+    if (selectedProduct) {
+      document.body.style.overflow = "hidden";
+      lenis?.stop();
+    } else {
+      document.body.style.overflow = "unset";
+      lenis?.start();
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+      lenis?.start();
     };
-    isMounting();
+  }, [selectedProduct, lenis]);
+
+  useEffect(() => {
+    fetch("https://fakestoreapi.com/products/category/electronics")
+      .then((res) => res.json())
+      .then((data: Product[]) => {
+        setProducts(data);
+        setLoading(false);
+      });
   }, []);
 
-  const onCategoryChange = (cat: string) => {
-    setActiveCategory(cat);
+  const handleAddToCart = (e: React.MouseEvent, p: Product) => {
+    e.stopPropagation(); // Evita abrir el modal al clickear el botón
+    addToCart({
+      image: p.image,
+      title: p.title,
+      category: p.category,
+      price: `${p.price}`,
+      id: `${p.id}`,
+    });
+
+    // Feedback visual inmediato
+    toast.success(`${p.title.substring(0, 20)}... añadido`, {
+      icon: <CheckCircle2 className="text-green-500 size-5" />,
+      description: "Se agregó correctamente a tu carrito.",
+    });
   };
 
-  // Categorías dinámicas basadas en los productos reales que vienen de la Sheets
-  const dynamicCategories = [
-    "Todos",
-    ...Array.from(new Set(posts.map((p) => p.category))),
-  ];
-
-  const filteredProducts = posts.filter(
-    (product) =>
-      activeCategory === "Todos" || product.category === activeCategory,
-  );
-
-  const handleWhatsAppOrder = (productName: string, productId: string) => {
-    const message = `Hola! 👋 Me interesa cotizar una mesada en: ${productName} (Ref: ${productId}). ¿Me podrían asesorar?`;
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      "_blank",
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) =>
+      p.title.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  };
+  }, [products, searchTerm]);
 
-  const getStatusColor = (estado: string) => {
-    switch (estado?.toUpperCase()) {
-      case "DISPONIBLE":
-        return "text-emerald-600 bg-emerald-50";
-      case "STOCK BAJO":
-        return "text-amber-600 bg-amber-50";
-      case "A PEDIDO":
-        return "text-orange-600 bg-orange-50";
-      default:
-        return "text-gray-600 bg-gray-50";
-    }
-  };
+  if (loading)
+    return (
+      <div className="h-96 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="animate-spin text-primary" size={32} />
+        <p className="text-zinc-400 text-sm font-medium">
+          Sincronizando stock...
+        </p>
+      </div>
+    );
 
   return (
-    <Section
-      id="catalog"
-      height="content"
-      className="bg-background border-b border-border"
-    >
-      <div className="flex flex-col gap-10 max-w-[1200px] mx-auto w-full">
-        {/* FILTROS DINÁMICOS */}
-        <div className="flex flex-col gap-4">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-            Explorar Catálogo
-          </span>
-          <div className="flex flex-wrap gap-3">
-            {dynamicCategories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => onCategoryChange(cat)}
-                className={cn(
-                  "px-6 py-2.5 rounded-md text-sm font-bold transition-all border",
-                  activeCategory === cat
-                    ? "bg-[#0f172a] text-white border-[#0f172a]"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50",
-                )}
+    <section id="catalog" className="bg-[#f5f5f7] py-12 px-4 md:px-8">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-zinc-900">
+            Hardware{" "}
+            <span className="text-primary font-bold">Seleccionado</span>
+          </h2>
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+            <input
+              type="text"
+              placeholder="Buscar componentes..."
+              className="w-full pl-10 pr-4 py-2 bg-white rounded-xl border border-zinc-200 outline-none focus:ring-2 focus:ring-blue-600/10 transition-all text-sm"
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </header>
+
+        {/* BENTO GRID CON ACCIÓN RÁPIDA */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[180px] md:auto-rows-[220px]">
+          {filteredProducts.map((p, index) => {
+            const isLarge = index === 0 || index === 3;
+            return (
+              <div
+                key={p.id}
+                onClick={() => setSelectedProduct(p)}
+                className={`group bg-white rounded-3xl p-5 cursor-pointer border border-zinc-100 hover:border-blue-600/20 transition-all duration-300 hover:shadow-lg active:scale-[0.98] flex flex-col justify-between overflow-hidden relative ${
+                  isLarge ? "col-span-2 row-span-2" : "col-span-1"
+                }`}
               >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* GRID DE MATERIALES */}
-        {isMounting ? (
-          <div className="h-64 flex flex-col items-center justify-center text-primary gap-4">
-            <Loader2 className="size-10 animate-spin opacity-20" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AnimatePresence mode="popLayout">
-              {filteredProducts.map((product) => (
-                <motion.div
-                  key={product._id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group"
-                >
-                  {/* Imagen de Postimages / Sheets */}
-                  <div className="h-48 bg-gray-50 relative flex items-center justify-center border-b border-gray-100 overflow-hidden">
-                    {product.imagen_url ? (
-                      <Image
-                        src={urlFor(product.imagen_url).width(800).url()}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-[1.5s] ease-out"
-                      />
-                    ) : (
-                      <Box className="size-10 text-gray-200" strokeWidth={1} />
-                    )}
-
-                    <div
-                      className={cn(
-                        "absolute top-3 left-3 px-2 py-1 rounded-[4px] text-[10px] font-bold uppercase tracking-wide shadow-sm z-10",
-                        getStatusColor(product.state),
-                      )}
+                <div className="relative z-10 flex justify-between items-start">
+                  <div className="max-w-[80%]">
+                    <h3
+                      className={`font-bold text-zinc-900 leading-tight ${isLarge ? "text-xl md:text-2xl mb-1" : "text-[11px] md:text-sm line-clamp-2"}`}
                     >
-                      {product.state}
-                    </div>
+                      {p.title}
+                    </h3>
+                    <span className="text-primary font-bold text-sm md:text-lg">
+                      ${p.price.toLocaleString("es-AR")}
+                    </span>
                   </div>
+                </div>
+                {/* Botón rápido de carrito en la Card */}
+                <button
+                  onClick={(e) => handleAddToCart(e, p)}
+                  className="absolute left-3 z-50 bottom-5 size-8 md:size-10 bg-zinc-50 border border-zinc-100 text-zinc-400 active:bg-blue-600 lg:hover:bg-blue-600 active:text-white lg:hover:text-white hover:border-blue-600 rounded-xl flex items-center justify-center transition-all lg:opacity-0 lg:group-hover:opacity-100 transform translate-y-2 lg:group-hover:translate-y-0 shadow-sm"
+                >
+                  <ShoppingCart size={isLarge ? 20 : 16} />
+                </button>
+                <div className="relative flex-1 w-full p-2 transition-transform duration-500 group-hover:scale-105">
+                  <Image
+                    src={p.image}
+                    alt={p.title}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
 
-                  <div className="p-5 flex flex-col flex-1">
-                    <div className="mb-4">
-                      <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1.5">
-                        {product.category}
-                      </p>
-                      <h3 className="text-lg font-black text-slate-900 leading-tight">
-                        {product.name}
-                      </h3>
-                    </div>
-
-                    <ul className="space-y-2.5 mb-6 text-xs font-medium text-gray-500">
-                      <li className="flex items-center gap-2">
-                        <MapPin className="size-3.5 opacity-60" /> Origen:{" "}
-                        <span className="text-slate-900 font-bold">
-                          {product.origin}
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Maximize className="size-3.5 opacity-60" /> Espesor:{" "}
-                        <span className="text-slate-900 font-bold">
-                          {product.thickness}
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <Sparkles className="size-3.5 opacity-60" />{" "}
-                        Terminación:{" "}
-                        <span className="text-slate-900 font-bold">
-                          {product.termination}
-                        </span>
-                      </li>
-                    </ul>
-
-                    <div className="mt-auto">
-                      <div className="flex items-end justify-between mb-4">
-                        <div>
-                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5">
-                            Precio Ref.
-                          </span>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-slate-900">
-                              ${Number(product.price).toLocaleString("es-AR")}
-                            </span>
-                            <span className="text-sm font-bold text-slate-900">
-                              /m²
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() =>
-                            handleWhatsAppOrder(product.name, product._id)
-                          }
-                          className="size-10 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-slate-900 transition-colors shadow-sm active:scale-90"
-                        >
-                          <ArrowRight className="size-4" />
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          addToCart({
-                            id: product._id,
-                            title: product.name,
-                            price: product.price.toString(),
-                            category: product.category,
-                          })
-                        }
-                        className="w-full bg-[#0f172a] text-white hover:bg-[#1e293b] py-3 rounded-lg text-xs font-bold uppercase flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
-                      >
-                        <ShoppingCart className="size-4" />
-                        Añadir a mi Selección
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* BANNER DE PRECISIÓN */}
-        <div className="bg-[#eff6ff] rounded-xl border border-blue-100 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm mt-4">
-          <div className="flex items-center gap-5 text-center md:text-left">
-            <div className="size-14 bg-primary rounded-full flex items-center justify-center shrink-0">
-              <ShieldCheck className="size-7 text-white" />
-            </div>
-            <div>
-              <h4 className="text-xl font-black text-slate-900 mb-1">
-                Calidad Certificada
-              </h4>
-              <p className="text-sm text-blue-800/70 font-medium max-w-lg">
-                Revisión rigurosa de placas para asegurar vetas uniformes antes
-                de cada corte.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() =>
-              window.open(`https://wa.me/${WHATSAPP_NUMBER}`, "_blank")
-            }
-            className="whitespace-nowrap px-8 py-3.5 bg-white text-primary font-bold text-sm rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors shadow-sm w-full md:w-auto active:scale-95"
-          >
-            Hablar con un Asesor
-          </button>
+                {/* Indicador visual de "Ver más" */}
+                <div className="absolute bottom-4 right-4 text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest">
+                  Detalles <Plus size={14} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-    </Section>
+
+      {/* PANEL LATERAL (SIDE PANEL) */}
+      <div
+        className={`fixed inset-0 z-[600] transition-opacity duration-300 ${selectedProduct ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+      >
+        <div
+          className="absolute inset-0 bg-black/10 backdrop-blur-sm"
+          onClick={() => setSelectedProduct(null)}
+        />
+        <div
+          data-lenis-prevent
+          className={`absolute top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl transition-transform duration-500 ease-out flex flex-col ${selectedProduct ? "translate-x-0" : "translate-x-full"}`}
+        >
+          {selectedProduct && (
+            <>
+              <div className="p-6 flex items-center justify-between border-b border-zinc-100 shrink-0">
+                <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">
+                  {selectedProduct.category}
+                </span>
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 overscroll-contain">
+                <div className="relative w-full aspect-square bg-[#f5f5f7] rounded-[2rem] p-8 mb-8">
+                  <Image
+                    src={selectedProduct.image}
+                    alt={selectedProduct.title}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <h2 className="text-2xl font-bold text-zinc-900 leading-tight mb-4">
+                  {selectedProduct.title}
+                </h2>
+                <p className="text-zinc-500 text-sm leading-relaxed mb-8 font-medium">
+                  {selectedProduct.description}
+                </p>
+
+                <div className="space-y-4 pt-6 border-t border-zinc-100">
+                  <div className="flex items-center gap-3 text-emerald-600">
+                    <ShieldCheck size={18} />
+                    <span className="text-[11px] font-bold uppercase tracking-wider">
+                      Garantía Escrita 12 meses
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-zinc-400">
+                    <CreditCard size={18} />
+                    <span className="text-[11px] font-bold uppercase tracking-wider">
+                      Cuotas fijas con tarjeta
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 bg-zinc-50 border-t border-zinc-100 shrink-0">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-zinc-400 font-medium uppercase text-[10px] tracking-widest">
+                    Precio Final
+                  </span>
+                  <span className="text-3xl font-bold text-zinc-900">
+                    ${selectedProduct.price.toLocaleString("es-AR")}
+                  </span>
+                </div>
+                <div className="grid grid-cols-5 gap-3">
+                  <button
+                    onClick={(e) => handleAddToCart(e, selectedProduct)}
+                    className="col-span-1 bg-white border border-zinc-200 text-zinc-900 py-4 rounded-xl flex items-center justify-center transition-colors duration-400 hover:bg-zinc-100 active:scale-90 active:bg-green-500"
+                  >
+                    <ShoppingCart size={20} />
+                  </button>
+                  <button className="col-span-4 bg-zinc-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary transition-colors shadow-lg active:scale-[0.98]">
+                    Pedir <Send size={16} />
+                  </button>
+                </div>
+              </div>
+              <Toaster
+                position="top-center"
+                theme="dark"
+                closeButton
+                duration={2000}
+              />
+            </>
+          )}
+        </div>
+      </div>
+    </section>
   );
 };
 

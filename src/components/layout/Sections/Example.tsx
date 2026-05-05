@@ -4,6 +4,7 @@ import { Section } from "../Section";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
+import Link from "next/link";
 
 const ExampleMessage = () => {
   return (
@@ -38,7 +39,15 @@ const ExampleMessage = () => {
         {/* Lado Derecho: Tu Marca */}
         <div className="flex flex-col items-center md:items-end gap-4">
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-            Desarrollado por Gonzalo Carles de
+            Desarrollado por{" "}
+            <Link
+              href={"https://www.linkedin.com/in/gonzalo-carles-461006287/"}
+              className="hover:border-b"
+              target="_blank"
+            >
+              Gonzalo Carles
+            </Link>{" "}
+            creador de
           </span>
           <a
             href="https://tuwebhoy-chi.vercel.app/"

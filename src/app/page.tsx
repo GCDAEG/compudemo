@@ -1,18 +1,13 @@
-import HowItWorks from "@/components/layout/Sections/HowItWorks";
 import HeroSection from "../components/layout/Sections/HeroSection";
-import PrdocutCatalog from "../components/layout/Sections/ProductCatalog";
 import WhatsAppChatInput from "@/components/ui/WhatsAppChatInput";
 
-import OurStory from "@/components/layout/Sections/OurStory";
 import LocationSection from "@/components/layout/Sections/LocationSection";
-import { getProducts } from "@/lib/getProduct";
-import { FeaturedWorks } from "@/components/layout/Sections/FeatureWorks";
 
 import { client } from "@/sanity/client";
 import { SanityDocument } from "next-sanity";
-import PricingSection from "@/components/layout/Sections/PricingSection";
-import ScheduleSection from "@/components/layout/Sections/ScheduleSection";
-import GallerySection from "@/components/layout/Sections/GallerySection";
+import ProductCatalog from "../components/layout/Sections/ProductCatalog";
+import { CartDrawer } from "@/components/ui/CartDrawer";
+import ExampleMessage from "@/components/layout/Sections/Example";
 
 const POSTS_QUERY = `*[_type == "product"] | order(name asc) {
   ...,
@@ -25,21 +20,21 @@ export default async function Home() {
   const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
   return (
     <main
-      className={`min-h-screen w-full font-base bg-background overflow-x-hidden`}
+      className={`min-h-screen w-full font-base bg-background overflow-hidden`}
     >
       <HeroSection />
       {/* <RoomsSection /> */}
       {/* <ServiceSection /> */}
       {/* <PrdocutCatalog posts={posts} /> */}
-      <PricingSection />
-      <ScheduleSection />
-      <GallerySection />
+      <ProductCatalog />
       {/* <HowItWorks />
       <OurStory /> */}
       <LocationSection />
       {/* <LocationSection />*/}
       {/* <Testimonials /> */}
+      <CartDrawer />
       <WhatsAppChatInput />
+      <ExampleMessage />
     </main>
   );
 }

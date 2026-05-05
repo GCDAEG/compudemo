@@ -9,156 +9,174 @@ import {
   Mail,
   ArrowUpRight,
   Navigation,
+  ShieldCheck,
+  Cpu,
 } from "lucide-react";
-import { siteConfig } from "@/lib/site/siteConfig";
 
 const ContactSection = () => {
-  const { brand } = siteConfig;
-  const WHATSAPP_NUMBER = "5493446000000"; // Reemplazar con el real
+  const WHATSAPP_NUMBER = "5493446000000"; // Número oficial Computel
 
   return (
     <section
-      id="contacto"
-      className="py-24 bg-zinc-950 relative overflow-hidden"
+      id="location"
+      className="py-24 bg-[#f5f5f7] relative overflow-hidden"
     >
-      {/* Luz de fondo sutil */}
-      <div className="absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Elementos decorativos sutiles */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        {/* ENCABEZADO */}
-        <div className="mb-16">
-          <h2 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
-            <MapPin className="size-4" /> Dónde Encontrarnos
-          </h2>
-          <h3 className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter">
-            Vení a <span className="text-emerald-500">Conocernos.</span>
-          </h3>
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+        {/* ENCABEZADO ESTILO EDITORIAL */}
+        <div className="mb-16 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase tracking-[0.3em]"
+          >
+            <Cpu size={14} /> Centro de Soporte & Ventas
+          </motion.div>
+          <motion.h3
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-6xl font-semibold text-zinc-900 tracking-tight"
+          >
+            Estamos para{" "}
+            <span className="text-zinc-400 font-light italic">ayudarte.</span>
+          </motion.h3>
         </div>
 
-        {/* GRID PRINCIPAL */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-          {/* COLUMNA IZQUIERDA: Info y Horarios (Ocupa 5 columnas) */}
-          <div className="lg:col-span-5 flex flex-col gap-4 lg:gap-6">
-            {/* Tarjeta de Horarios */}
+        {/* GRID PRINCIPAL BENTO STYLE */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* COLUMNA IZQUIERDA: Horarios y Contacto Rápido */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            {/* Tarjeta de Horarios - Computel Style */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl"
+              className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-zinc-200/50"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="size-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
-                  <Clock className="size-5 text-emerald-500" />
+              <div className="flex items-center gap-3 mb-8">
+                <div className="size-10 bg-zinc-50 rounded-xl flex items-center justify-center border border-zinc-100">
+                  <Clock className="size-5 text-zinc-400" />
                 </div>
-                <h4 className="text-xl font-black text-white italic uppercase">
-                  Horarios
+                <h4 className="text-lg font-bold text-zinc-900 tracking-tight">
+                  Horarios de Atención
                 </h4>
               </div>
 
-              <ul className="space-y-4">
-                <li className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                  <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                    Lunes a Viernes
-                  </span>
-                  <span className="text-sm font-black text-white">
-                    07:00 - 23:00
-                  </span>
-                </li>
-                <li className="flex justify-between items-center border-b border-zinc-800 pb-4">
-                  <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                    Sábados
-                  </span>
-                  <span className="text-sm font-black text-white">
-                    09:00 - 18:00
-                  </span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">
-                    Domingos
-                  </span>
-                  <span className="text-xs font-black text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-widest">
-                    Cerrado
-                  </span>
-                </li>
-              </ul>
+              <div className="space-y-5">
+                {[
+                  {
+                    days: "Lunes a Viernes",
+                    hours: "08:30 - 12:30 | 16:00 - 20:00",
+                  },
+                  { days: "Sábados", hours: "09:00 - 13:00" },
+                  { days: "Domingos", hours: "Cerrado", special: true },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col gap-1 border-b border-zinc-50 pb-4 last:border-0 last:pb-0"
+                  >
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      {item.days}
+                    </span>
+                    <span
+                      className={`text-sm font-semibold ${item.special ? "text-zinc-300" : "text-zinc-800"}`}
+                    >
+                      {item.hours}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </motion.div>
 
-            {/* Tarjeta de Contacto Rápido */}
+            {/* Contacto Directo */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-zinc-900 border border-zinc-800 p-8 rounded-3xl flex flex-col gap-4"
+              className="bg-zinc-900 p-8 rounded-[2.5rem] flex flex-col gap-4 shadow-xl"
             >
               <button
                 onClick={() =>
-                  window.open(
-                    `https://wa.me/${WHATSAPP_NUMBER}?text=Hola! Me gustaría hacerles una consulta.`,
-                    "_blank",
-                  )
+                  window.open(`https://wa.me/${WHATSAPP_NUMBER}`, "_blank")
                 }
-                className="w-full bg-[#25d366] hover:bg-[#20bd5a] text-zinc-950 p-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-lg shadow-[#25d366]/20"
+                className="w-full bg-primary hover:bg-blue-500 text-white p-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-lg shadow-blue-600/20"
               >
-                <MessageCircle className="size-5" /> Chat por WhatsApp
+                <MessageCircle size={18} /> WhatsApp Técnico
               </button>
 
               <button
                 onClick={() =>
-                  (window.location.href = "mailto:contacto@tugimnasio.com")
+                  (window.location.href = "mailto:contacto@computel.com.ar")
                 }
-                className="w-full bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-white p-4 rounded-2xl font-bold uppercase text-xs tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3"
+                className="w-full bg-white/5 hover:bg-white/10 text-white p-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border border-white/10 flex items-center justify-center gap-3"
               >
-                <Mail className="size-4 text-zinc-400" /> Enviar Correo
+                <Mail size={16} /> Enviar Mail
               </button>
             </motion.div>
           </div>
 
-          {/* COLUMNA DERECHA: Mapa / Fachada (Ocupa 7 columnas) */}
+          {/* COLUMNA DERECHA: Mapa y Ubicación */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-7 relative bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden min-h-[400px] lg:min-h-full group"
+            className="lg:col-span-8 relative bg-white border border-zinc-200/50 rounded-[2.5rem] overflow-hidden min-h-[450px] shadow-sm flex flex-col"
           >
-            {/* Imagen del mapa o fachada (Mejor que un iframe que rompe el modo oscuro) */}
-            <Image
-              src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?q=80&w=1200&auto=format&fit=crop"
-              alt="Ubicación del Gimnasio"
-              fill
-              className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-            />
+            {/* Espacio para Mapa / Fachada */}
+            <div className="relative flex-1 bg-zinc-100 overflow-hidden group">
+              <Image
+                src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=1200&auto=format&fit=crop"
+                alt="Computel Gualeguaychú"
+                fill
+                className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000 grayscale-[50%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+            </div>
 
-            {/* Gradiente oscuro para que el texto resalte */}
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
-
-            {/* Info Flotante de Ubicación */}
-            <div className="absolute bottom-8 left-8 right-8 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-              <div>
-                <div className="size-12 bg-emerald-500 rounded-2xl flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                  <MapPin className="size-6 text-zinc-950" />
+            {/* Info de Ubicación */}
+            <div className="p-8 md:p-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 bg-white relative z-10">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+                    <MapPin className="size-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                      Sede Central
+                    </h4>
+                    <p className="text-zinc-500 font-medium text-sm">
+                      Urquiza 1234, Gualeguaychú, Entre Ríos.
+                    </p>
+                  </div>
                 </div>
-                <h4 className="text-2xl font-black text-white italic uppercase tracking-tight mb-2">
-                  Sede Central
-                </h4>
-                <p className="text-zinc-400 font-medium text-sm">
-                  Av. Rocamora 1234, Gualeguaychú <br /> Entre Ríos, Argentina.
-                </p>
               </div>
 
-              <button
-                onClick={() =>
-                  window.open(
-                    "https://maps.google.com/?q=Gualeguaychú,Entre+Rios",
-                    "_blank",
-                  )
-                }
-                className="bg-white hover:bg-zinc-200 text-zinc-950 px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 shrink-0"
-              >
-                <Navigation className="size-4" /> Cómo Llegar{" "}
-                <ArrowUpRight className="size-4 ml-1 opacity-50" />
-              </button>
+              <div className="flex flex-col gap-3 w-full md:w-auto">
+                <button
+                  onClick={() =>
+                    window.open(
+                      "https://maps.google.com/?q=Computel+Gualeguaychú",
+                      "_blank",
+                    )
+                  }
+                  className="bg-zinc-900 hover:bg-zinc-800 text-white px-8 py-4 rounded-2xl font-bold text-[11px] uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Navigation size={14} /> Cómo Llegar{" "}
+                  <ArrowUpRight size={14} />
+                </button>
+                <div className="flex items-center gap-2 px-2">
+                  <ShieldCheck size={14} className="text-primary" />
+                  <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                    Local Oficial Verificado
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

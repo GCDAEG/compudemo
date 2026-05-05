@@ -1,169 +1,186 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { NavSection } from "@/lib/sections";
-import Link from "next/link";
-import { X, Menu, Zap, ChevronRight, Dumbbell, Trophy } from "lucide-react";
-import { useLenis } from "lenis/react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { siteConfig } from "@/lib/site/siteConfig";
+import { Menu, X, ChevronRight, Phone, Cpu } from "lucide-react";
+import { useLenis } from "lenis/react";
+import { createPortal } from "react-dom";
+import Link from "next/link";
+import { NavSection } from "@/lib/sections";
 
 interface MobileMenuProps {
   sections: NavSection[];
   activeSection: string | null;
+  isScrolled: boolean;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ sections, activeSection }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({
+  sections,
+  activeSection,
+  isScrolled,
+}) => {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const lenis = useLenis();
-  const { brand } = siteConfig;
+
+  // Aseguramos que el portal solo se cree en el cliente
+  useEffect(() => {
+    const isMounted = () => {
+      setMounted(true);
+    };
+    isMounted();
+    return () => setMounted(false);
+  }, []);
 
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      lenis?.stop();
     } else {
       document.body.style.overflow = "unset";
+      lenis?.start();
     }
-  }, [open]);
+  }, [open, lenis]);
 
   const handleScroll = (id: string) => {
     setOpen(false);
-    // Ejecución rápida para que la web se sienta "veloz" como un atleta
-    lenis?.scrollTo(`#${id}`, { offset: -80, duration: 1.2 });
+    // Pequeño delay para que la animación de cierre no interrumpa el scroll
+    setTimeout(() => {
+      lenis?.scrollTo(`#${id}`, { offset: -80, duration: 1.2 });
+    }, 300);
   };
+
+  const menuContent = (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Overlay - Fondo desenfocado estilo Apple */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-[999] bg-zinc-900/20 backdrop-blur-md h-screen w-screen"
+          />
+
+          {/* Sheet - El Menú Lateral */}
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 h-dvh w-[85%] max-w-[320px] z-[1000] bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.1)] flex flex-col"
+          >
+            {/* Header del Sheet */}
+            <div className="p-6 flex items-center justify-between border-b border-zinc-100">
+              <div className="flex flex-col items-start gap-2">
+                <div className=" rounded-lg flex items-center justify-center">
+                  <Link
+                    href="/"
+                    className="relative w-40 h-10 block transition-opacity hover:opacity-80"
+                  >
+                    <Image
+                      src="/logo.webp"
+                      alt="Computel"
+                      fill
+                      priority
+                      className="object-contain "
+                    />
+                  </Link>
+                </div>
+              </div>
+              <button
+                onClick={() => setOpen(false)}
+                className="size-10 bg-zinc-50 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Links de Navegación */}
+            <nav className="flex-1 px-4 py-8 overflow-y-auto no-scrollbar">
+              <p className="px-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-4">
+                Secciones
+              </p>
+              <ul className="space-y-2">
+                {sections.map((sec) => (
+                  <li key={sec.id}>
+                    <button
+                      onClick={() => handleScroll(sec.id)}
+                      className={`w-full flex items-center justify-between p-4 rounded-2xl text-sm font-bold transition-all ${
+                        activeSection === sec.id
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-zinc-500 hover:bg-zinc-50"
+                      }`}
+                    >
+                      {sec.label}
+                      <ChevronRight
+                        size={16}
+                        className={
+                          activeSection === sec.id
+                            ? "text-blue-600"
+                            : "text-zinc-300"
+                        }
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Footer del Sheet */}
+            <div className="p-6 bg-zinc-50 border-t border-zinc-100 space-y-4">
+              <button
+                onClick={() => handleScroll("contacto")}
+                className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-bold text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-zinc-900/10"
+              >
+                <Phone size={14} /> Contactar Ahora
+              </button>
+              <p className="text-[10px] text-center text-zinc-400 font-medium italic">
+                Computel — 15 años de trayectoria
+              </p>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <>
-      {/* --- NAVBAR TOP (GYM STYLE) --- */}
-      <nav className="fixed top-0 left-0 w-full h-20 z-[100] flex items-center px-4 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-900 lg:hidden">
-        <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-          <Link
-            href="/"
-            className="flex items-center gap-2 active:scale-95 transition-transform"
-            onClick={() => setOpen(false)}
+      {/* Botón Trigger (El que se queda en el Nav) */}
+      <div className="w-full h-full flex items-center px-4 lg:hidden">
+        <div className="w-full flex justify-between items-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isScrolled ? 1 : 0 }}
+            className="font-bold text-zinc-900 uppercase tracking-tighter"
           >
-            <div className="bg-emerald-500 p-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-              <Dumbbell className="text-zinc-950 size-5" strokeWidth={2.5} />
-            </div>
-            <h2 className="text-lg font-black tracking-tighter text-white uppercase italic">
-              {brand.name}
-              <span className="text-emerald-500">{brand.suffix}</span>
-            </h2>
-          </Link>
+            <Link
+              href="/"
+              className="relative w-40 h-10 block transition-opacity hover:opacity-80"
+            >
+              <Image
+                src="/logo.webp"
+                alt="Computel"
+                fill
+                priority
+                className="object-contain "
+              />
+            </Link>
+          </motion.div>
 
           <button
             onClick={() => setOpen(true)}
-            className="size-11 flex items-center justify-center rounded-xl bg-zinc-900 text-white border border-zinc-800 active:bg-zinc-800 transition-colors"
+            className="size-10 bg-white border border-zinc-200 rounded-xl flex items-center justify-center text-zinc-900 shadow-sm active:scale-90 transition-transform"
           >
             <Menu className="size-6" />
           </button>
         </div>
-      </nav>
+      </div>
 
-      {/* --- DRAWER --- */}
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm"
-            />
-
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed top-0 right-0 h-dvh w-[85%] max-w-xs z-[120] bg-zinc-950 flex flex-col border-l border-zinc-900 shadow-2xl"
-            >
-              {/* Header */}
-              <div className="p-6 flex items-center justify-between border-b border-zinc-900">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-1">
-                    Keep Training
-                  </span>
-                  <h3 className="text-xl font-black text-white italic uppercase">
-                    Menú.
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="size-10 flex items-center justify-center bg-zinc-900 text-zinc-400 rounded-xl active:bg-emerald-500 active:text-zinc-950 transition-all"
-                >
-                  <X className="size-5" strokeWidth={3} />
-                </button>
-              </div>
-
-              {/* Navigation */}
-              <nav className="flex-1 px-4 py-6 overflow-y-auto no-scrollbar">
-                <ul className="space-y-2">
-                  {sections.map((sec) => {
-                    const isActive = activeSection === sec.id;
-                    return (
-                      <li key={sec.id}>
-                        <button
-                          onClick={() => handleScroll(sec.id)}
-                          className={cn(
-                            "w-full flex items-center justify-between p-4 rounded-xl transition-all",
-                            isActive
-                              ? "bg-emerald-500 text-zinc-950 font-black shadow-lg shadow-emerald-500/20"
-                              : "text-zinc-400 font-bold hover:bg-zinc-900 hover:text-white",
-                          )}
-                        >
-                          <span className="text-xs uppercase tracking-widest">
-                            {sec.label}
-                          </span>
-                          <ChevronRight
-                            className={cn(
-                              "size-4",
-                              isActive ? "text-zinc-950" : "text-zinc-700",
-                            )}
-                            strokeWidth={3}
-                          />
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-
-              {/* Footer CTA (Venta Directa) */}
-              <div className="p-6 bg-zinc-900/50 border-t border-zinc-900 space-y-6">
-                <div className="flex items-center gap-4 px-1">
-                  <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                    <Trophy size={20} className="text-emerald-500" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest leading-none mb-1">
-                      ¿Primera vez?
-                    </p>
-                    <p className="text-xs font-bold text-white">
-                      Clase de prueba gratis.
-                    </p>
-                  </div>
-                </div>
-
-                <Button
-                  className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black uppercase text-[11px] tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-lg shadow-emerald-500/10"
-                  onClick={() => handleScroll("contacto")}
-                >
-                  <Zap className="size-4 fill-current" />
-                  ¡Empezar Ya!
-                </Button>
-
-                <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-widest">
-                  Gualeguaychú • Entre Ríos
-                </p>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Renderizamos el contenido en un Portal al body */}
+      {mounted && createPortal(menuContent, document.body)}
     </>
   );
 };

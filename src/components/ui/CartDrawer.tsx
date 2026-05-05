@@ -1,301 +1,347 @@
 "use client";
-import React, { useState } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 import {
+  ShoppingBag,
   X,
+  Trash2,
+  Plus,
+  Minus,
   Check,
-  Send,
+  Truck,
+  Store,
   ChevronLeft,
-  Target,
+  ArrowRight,
+  MapPin,
+  FileText,
   Clock,
-  User,
-  Zap,
-  LucideProps,
-  ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site/siteConfig";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-const WHATSAPP_NUMBER = "5493446000000";
+export const CartDrawer = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [showWSModal, setShowWSModal] = useState(false);
+  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
+    "pickup",
+  );
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
 
-export const PlanFlowModal = ({
-  plan,
-  open,
-  onClose,
-}: {
-  plan: {
-    name: string;
-    price: string;
-    description: string;
-    features: string[];
-    icon: React.ForwardRefExoticComponent<
-      Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
-    >;
-    color: string;
-    popular: boolean;
-  } | null;
-  open: boolean;
-  onClose: () => void;
-}) => {
-  const { brand } = siteConfig;
-  const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: "", goal: "", schedule: "" });
+  const { cart, removeFromCart, updateQuantity, totalPrice } = useCart();
 
-  if (!plan) return null;
+  const WHATSAPP_NUMBER = "5493446000000"; // Número de Computel Gualeguaychú
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  const generateMessage = () => {
-    return `⚡ *NUEVA INSCRIPCIÓN* ⚡\n\nHola, quiero arrancar a entrenar:\n\n🔥 *PLAN:* ${plan.name}\n💰 *Precio:* $${Number(plan.price).toLocaleString("es-AR")}/mes\n\n👤 *Nombre:* ${form.name}\n🎯 *Objetivo:* ${form.goal}\n⏰ *Turno:* ${form.schedule}\n\n¿Me pasan los datos para abonar y empezar?`;
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
+  }, [isOpen]);
+
+  const generateWSMessage = (): string => {
+    const productList = cart
+      .map(
+        (item) =>
+          `• ${item.quantity}x ${item.title.toUpperCase()} ($${(Number(item.price) * item.quantity).toLocaleString("es-AR")})`,
+      )
+      .join("\n");
+
+    const header = `💻 *NUEVO PEDIDO - COMPUTEL*`;
+    const deliveryInfo =
+      deliveryType === "delivery"
+        ? `🛵 *ENVÍO A DOMICILIO*\n📍 *DIRECCIÓN:* ${address}`
+        : `🏪 *RETIRO EN LOCAL (Gualeguaychú)*`;
+
+    const notesInfo = notes ? `\n\n📝 *CONSULTAS TÉCNICAS:* ${notes}` : "";
+
+    return `${header}\n\n${deliveryInfo}${notesInfo}\n\n*DETALLE DEL HARDWARE:*\n${productList}\n\n*TOTAL FINAL: $${totalPrice.toLocaleString("es-AR")}*\n\n_(Incluye garantía oficial escrita)_`;
   };
 
-  const handleSend = () => {
-    const message = generateMessage();
+  const handleFinalSend = () => {
     window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(generateWSMessage())}`,
       "_blank",
     );
-    onClose();
-    setTimeout(() => setStep(1), 500); // Reset después de cerrar
-  };
-
-  const totalSteps = 4;
-  const progress = (step / totalSteps) * 100;
-
-  // Variantes de animación para deslizar el contenido
-  const slideVariants: Variants = {
-    hidden: { opacity: 0, x: 20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.3, ease: "easeOut" },
-    },
-    exit: { opacity: 0, x: -20, transition: { duration: 0.2 } },
+    setShowWSModal(false);
+    setIsOpen(false);
   };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
+    <>
+      {/* --- TRIGGER FLOTANTE --- */}
+      <AnimatePresence>
+        {totalItems > 0 && !isOpen && (
           <motion.div
-            initial={{ scale: 0.95, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 20 }}
-            className="w-full max-w-md bg-zinc-950 rounded-[2rem] border border-zinc-800 overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]"
+            initial={{ y: 100, x: "-50%" }}
+            animate={{ y: 0, x: "-50%" }}
+            exit={{ y: 100, x: "-50%" }}
+            className="fixed bottom-6 left-1/2 w-[92%] max-w-md z-[500]"
           >
-            {/* PROGRESS BAR */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-zinc-900">
-              <motion.div
-                className="h-full bg-emerald-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-
-            {/* HEADER */}
-            <div className="flex items-center justify-between p-5 border-b border-zinc-900/50 pt-6">
-              <div className="flex items-center gap-3">
-                {step > 1 && (
-                  <button
-                    onClick={() => setStep(step - 1)}
-                    className="p-1 text-zinc-500 hover:text-white transition-colors"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                )}
-                <div>
-                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest leading-none mb-1">
-                    Paso {step} de {totalSteps}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="w-full h-18 bg-zinc-900 text-white rounded-2xl px-6 flex items-center justify-between shadow-2xl hover:bg-zinc-800 transition-all active:scale-95"
+            >
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <ShoppingBag className="size-6" />
+                  <span className="absolute -top-2 -right-2 size-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-zinc-900">
+                    {totalItems}
+                  </span>
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 leading-none">
+                    Mi Carrito
                   </p>
-                  <h3 className="font-black text-white italic text-lg leading-none uppercase">
-                    Plan {plan.name}
-                  </h3>
+                  <p className="text-sm font-semibold">Finalizar compra</p>
                 </div>
               </div>
-              <button
-                onClick={onClose}
-                className="size-8 flex items-center justify-center bg-zinc-900 rounded-full text-zinc-500 hover:text-white transition-colors"
-              >
-                <X size={18} strokeWidth={3} />
-              </button>
-            </div>
+              <span className="text-xl font-bold tracking-tight">
+                ${totalPrice.toLocaleString("es-AR")}
+              </span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            {/* BODY DINÁMICO */}
-            <div className="p-6 overflow-y-auto flex-1">
-              <AnimatePresence mode="wait">
-                {/* PASO 1: NOMBRE */}
-                {step === 1 && (
-                  <motion.div
-                    key="step1"
-                    variants={slideVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    <div className="space-y-2">
-                      <div className="size-12 bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-                        <User className="size-6 text-emerald-500" />
-                      </div>
-                      <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">
-                        ¿Cómo te llamás?
-                      </h4>
-                      <p className="text-sm text-zinc-400 font-medium">
-                        Necesitamos tu nombre para registrarte en el sistema.
-                      </p>
-                    </div>
-                    <input
-                      autoFocus
-                      className="w-full p-5 rounded-2xl bg-zinc-900 border border-zinc-800 text-white font-bold text-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all placeholder:text-zinc-600 placeholder:font-medium"
-                      placeholder="Ej: Gonzalo"
-                      value={form.name}
-                      onChange={(e) =>
-                        setForm({ ...form, name: e.target.value })
-                      }
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && form.name.trim() && setStep(2)
-                      }
-                    />
-                    <Button
-                      onClick={() => setStep(2)}
-                      disabled={!form.name.trim()}
-                      className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black uppercase tracking-widest text-xs rounded-xl disabled:opacity-50"
+      {/* --- DRAWER --- */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className={`fixed inset-0 z-[550] flex justify-end `}
+          >
+            <div className="bg-black/40 absolute left-0 w-full h-full inset-0" />
+            <div className="flex flex-col h-full w-full max-w-2xl bg-zinc-50 lg:border-l border-zinc-200 relative z-50">
+              <div className="px-6 py-6 flex items-center justify-between border-b border-zinc-200 bg-white">
+                <div className="flex items-center gap-2">
+                  {step === 2 && (
+                    <button
+                      onClick={() => setStep(1)}
+                      className="p-2 -ml-2 text-primary"
                     >
-                      Continuar <ChevronRight className="size-4 ml-1" />
-                    </Button>
-                  </motion.div>
-                )}
+                      <ChevronLeft size={24} />
+                    </button>
+                  )}
+                  <h2 className="text-xl font-bold tracking-tight text-zinc-900">
+                    {step === 1 ? "Tu Selección" : "Método de Entrega"}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="size-10 bg-zinc-100 rounded-xl flex items-center justify-center text-zinc-500"
+                >
+                  <X size={20} />
+                </button>
+              </div>
 
-                {/* PASO 2: OBJETIVO */}
-                {step === 2 && (
-                  <motion.div
-                    key="step2"
-                    variants={slideVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    <div className="space-y-2">
-                      <div className="size-12 bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-                        <Target className="size-6 text-emerald-500" />
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {step === 1 ? (
+                  <div className="space-y-3">
+                    {cart.map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-white p-4 rounded-2xl border border-zinc-200 flex gap-4 relative shadow-sm"
+                      >
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="absolute top-4 right-4 text-zinc-300 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        <div className="relative size-20 rounded-xl overflow-hidden shrink-0 border border-zinc-100">
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            fill
+                            className="object-contain p-2"
+                          />
+                        </div>
+                        <div className="flex-1 flex flex-col justify-between">
+                          <h4 className="font-bold text-zinc-900 text-sm line-clamp-1 pr-8">
+                            {item.title}
+                          </h4>
+                          <div className="flex items-center justify-between">
+                            <p className="text-primary font-bold">
+                              $
+                              {(
+                                Number(item.price) * item.quantity
+                              ).toLocaleString("es-AR")}
+                            </p>
+                            <div className="flex items-center gap-3 bg-zinc-50 p-1 rounded-lg border border-zinc-100">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
+                                disabled={item.quantity <= 1}
+                                className="size-7 flex items-center justify-center text-zinc-400"
+                              >
+                                <Minus size={14} />
+                              </button>
+                              <span className="font-bold text-xs">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
+                                className="size-7 flex items-center justify-center bg-zinc-900 text-white rounded-md"
+                              >
+                                <Plus size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">
-                        ¿Cuál es tu objetivo?
-                      </h4>
-                    </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-6 pt-2">
                     <div className="grid grid-cols-2 gap-3">
-                      {[
-                        "Ganar músculo",
-                        "Bajar peso",
-                        "Rendimiento",
-                        "Salud / Bienestar",
-                      ].map((g) => (
-                        <button
-                          key={g}
-                          onClick={() => {
-                            setForm({ ...form, goal: g });
-                            setStep(3);
-                          }}
-                          className="flex flex-col items-center justify-center text-center p-4 h-24 bg-zinc-900 rounded-2xl border border-zinc-800 hover:border-emerald-500 hover:bg-zinc-800 transition-all active:scale-95 group"
-                        >
-                          <span className="font-bold text-zinc-300 group-hover:text-white text-sm">
-                            {g}
-                          </span>
-                        </button>
-                      ))}
+                      <button
+                        onClick={() => setDeliveryType("pickup")}
+                        className={cn(
+                          "flex flex-col items-center gap-3 py-6 rounded-2xl border-2 transition-all",
+                          deliveryType === "pickup"
+                            ? "border-blue-600 bg-blue-50/50 text-primary"
+                            : "border-zinc-200 bg-white",
+                        )}
+                      >
+                        <Store size={24} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                          Retiro en Local
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => setDeliveryType("delivery")}
+                        className={cn(
+                          "flex flex-col items-center gap-3 py-6 rounded-2xl border-2 transition-all",
+                          deliveryType === "delivery"
+                            ? "border-blue-600 bg-blue-50/50 text-primary"
+                            : "border-zinc-200 bg-white",
+                        )}
+                      >
+                        <Truck size={24} />
+                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                          Envío a Casa
+                        </span>
+                      </button>
                     </div>
-                  </motion.div>
-                )}
 
-                {/* PASO 3: HORARIO */}
-                {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    variants={slideVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    <div className="space-y-2">
-                      <div className="size-12 bg-zinc-900 rounded-2xl flex items-center justify-center mb-4">
-                        <Clock className="size-6 text-emerald-500" />
+                    <div className="bg-white p-6 rounded-2xl border border-zinc-200 space-y-4">
+                      {deliveryType === "delivery" && (
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <MapPin size={14} className="text-primary" />{" "}
+                            Dirección en Gualeguaychú
+                          </label>
+                          <input
+                            type="text"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            placeholder="Ej: Urquiza 123, entre 25 y San Martín"
+                            className="w-full p-4 bg-zinc-50 border border-zinc-100 rounded-xl outline-none font-semibold text-sm"
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-2">
+                        <label className="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                          <FileText size={14} className="text-primary" /> Notas
+                          o consultas
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          placeholder="Ej: Consultar compatibilidad con motherboard B450..."
+                          className="w-full p-4 bg-zinc-50 border border-zinc-100 rounded-xl outline-none font-semibold text-sm resize-none"
+                        />
                       </div>
-                      <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">
-                        ¿Cuándo venís?
-                      </h4>
                     </div>
-                    <div className="grid grid-cols-1 gap-3">
-                      {[
-                        "Turno Mañana (7hs - 12hs)",
-                        "Turno Tarde (13hs - 17hs)",
-                        "Turno Noche (18hs - 22hs)",
-                        "Flexible / Rotativo",
-                      ].map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => {
-                            setForm({ ...form, schedule: s });
-                            setStep(4);
-                          }}
-                          className="flex items-center p-5 bg-zinc-900 rounded-2xl border border-zinc-800 hover:border-emerald-500 transition-all active:scale-95 text-left group"
-                        >
-                          <span className="font-bold text-zinc-300 group-hover:text-white flex-1">
-                            {s}
-                          </span>
-                          <ChevronRight className="size-4 text-zinc-600 group-hover:text-emerald-500 transition-colors" />
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
+                  </div>
                 )}
+              </div>
 
-                {/* PASO 4: PREVIEW Y ENVÍO */}
-                {step === 4 && (
-                  <motion.div
-                    key="step4"
-                    variants={slideVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    <div className="space-y-2">
-                      <div className="size-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center mb-4">
-                        <Zap className="size-6 text-emerald-500" />
-                      </div>
-                      <h4 className="text-2xl font-black text-white italic uppercase tracking-tight">
-                        ¡Todo Listo!
-                      </h4>
-                      <p className="text-sm text-zinc-400 font-medium">
-                        Revisá tu solicitud antes de enviarla al gimnasio.
-                      </p>
-                    </div>
-
-                    {/* Falso ticket de WhatsApp */}
-                    <div className="bg-[#111b21] p-5 rounded-2xl text-[13px] text-zinc-200 whitespace-pre-line border border-zinc-800 shadow-inner font-medium">
-                      {generateMessage()}
-                    </div>
-
-                    <Button
-                      onClick={handleSend}
-                      className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 rounded-xl font-black uppercase text-xs tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95"
-                    >
-                      <Send className="size-4" /> Enviar Inscripción
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="p-8 bg-white border-t border-zinc-100 shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
+                <div className="flex justify-between items-center mb-6">
+                  <span className="text-lg font-bold text-zinc-900">Total</span>
+                  <span className="text-3xl font-bold text-primary">
+                    ${totalPrice.toLocaleString("es-AR")}
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    step === 1 ? setStep(2) : setShowWSModal(true)
+                  }
+                  disabled={deliveryType === "delivery" && !address.trim()}
+                  className="w-full h-16 bg-zinc-900 text-white rounded-2xl font-bold flex items-center justify-center gap-3 disabled:opacity-30 transition-all hover:bg-zinc-800"
+                >
+                  {step === 1
+                    ? "Confirmar Selección"
+                    : "Coordinar por WhatsApp"}
+                  <ArrowRight size={20} />
+                </button>
+              </div>
             </div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+
+      {/* --- PREVIEW WHATSAPP --- */}
+      <AnimatePresence>
+        {showWSModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[600] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl border border-zinc-200"
+            >
+              <div className="bg-[#075E54] p-6 text-white flex items-center gap-4">
+                <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <p className="font-bold uppercase tracking-widest text-sm">
+                    Computel Gualeguaychú
+                  </p>
+                  <p className="text-[10px] font-medium opacity-75 uppercase tracking-widest">
+                    Canal de Ventas Oficial
+                  </p>
+                </div>
+              </div>
+              <div className="bg-[#E5DDD5] p-6 min-h-[250px] flex items-end">
+                <div className="bg-[#DCF8C6] p-4 rounded-2xl rounded-tr-none text-[12px] font-medium leading-relaxed shadow-sm whitespace-pre-wrap">
+                  {generateWSMessage()}
+                </div>
+              </div>
+              <div className="p-6 flex gap-3 bg-white">
+                <button
+                  onClick={() => setShowWSModal(false)}
+                  className="flex-1 py-4 text-xs font-bold uppercase text-zinc-400 hover:bg-zinc-50 rounded-2xl transition-colors"
+                >
+                  Atrás
+                </button>
+                <button
+                  onClick={handleFinalSend}
+                  className="flex-[2] py-4 bg-[#25D366] text-white rounded-2xl font-bold uppercase text-xs flex items-center justify-center gap-2 shadow-lg shadow-green-200"
+                >
+                  Enviar Pedido
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

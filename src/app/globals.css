@@ -5,84 +5,79 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-accent: var(--accent);
+  --color-card: var(--card);
   --color-border: var(--border);
   --radius-custom: var(--radius);
 }
 
 :root {
-  /* Fondo principal en Zinc-950 para el look de gimnasio premium */
-  --background: #09090b;
-  
-  /* Texto principal claro (Blanco/Zinc-50) para máxima legibilidad en fondo oscuro */
-  --foreground: #fafafa; 
-
-  /* Verde Esmeralda vibrante (Emerald-500) para CTAs, rayos e íconos */
-  --primary: #10b981; 
-  
-  /* Color secundario oscuro (Zinc-900) para el fondo de las tarjetas y modales */
-  --accent: #18181b;
-
-  /* Borde oscuro (Zinc-800) para separar elementos sin generar un contraste molesto */
-  --border: #27272a; 
-
-  /* Bordes más redondeados (24px) que es la tendencia en interfaces móviles actuales */
-  --radius: 1.5rem; 
+  --background: #ffffff;
+  --foreground: #18181b; /* Zinc-900 */
+  --primary: #e51515;    /* Azul Corporativo */
+  --accent: #f4f4f5;     /* Zinc-100 para fondos de cards */
+  --border: #e4e4e7;     /* Zinc-200 */
+  --radius: 0.75rem; 
 }
 
 button {
   @apply cursor-pointer;
 }
-
+/* Tarjeta Minimalista */
+.card-clean {
+  @apply bg-white border border-border rounded-[var(--radius)] transition-all duration-300 
+         hover:border-zinc-300 hover:shadow-xl hover:shadow-zinc-200/50;
+}
 @layer base {
   html {
     @apply overflow-x-hidden scroll-smooth;
   }
   body {
     @apply bg-background text-foreground antialiased;
-    /* Tipografía Sans-serif (se mantiene, pero ahora el texto por defecto es blanco) */
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: inherit;
+    @apply tracking-tight font-bold;
   }
 
   img {
-    @apply object-cover;
+    @apply object-contain; /* En hardware es mejor contain para no cortar las fotos de los productos */
   }
 }
 
 @layer components {
-  /* Tarjeta adaptada al gimnasio: fondo oscuro, borde que se pinta de verde al hover y resplandor estilo neón */
-  .card-gym {
-    @apply border border-border bg-accent rounded-[var(--radius-custom)] transition-all duration-500 hover:border-primary/50 hover:shadow-[0_10px_40px_rgba(16,185,129,0.1)] hover:-translate-y-1;
+  /* Tarjeta Gamer: Efecto de profundidad y borde neón al pasar el mouse */
+  .card-gamer {
+    @apply border border-border bg-card rounded-[var(--radius-custom)] transition-all duration-300 
+           hover:border-primary/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] hover:scale-[1.02];
+  }
+
+  /* Botón con resplandor (Glow effect) */
+  .btn-primary {
+    @apply bg-primary text-white font-bold py-3 px-6 rounded-[var(--radius-custom)] 
+           transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] 
+           active:scale-95;
   }
 }
 
 /* ==========================================================================
-   CUSTOM SCROLLBAR (Dark Theme - Gym)
+   CUSTOM SCROLLBAR (Gamer Edition)
    ========================================================================== */
 
-/* Ancho general de la barra */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px; /* Para el scroll horizontal si existe */
+  width: 8px;
 }
 
-/* El fondo (track) por donde se desliza la barra */
 ::-webkit-scrollbar-track {
-  background: #09090b; /* zinc-950 */
-  border-left: 1px solid #18181b; /* zinc-900 */
+  background: var(--background);
 }
 
-/* La barra que se mueve (thumb) */
 ::-webkit-scrollbar-thumb {
-  background: #27272a; /* zinc-800 */
-  border-radius: 8px; 
-  border: 2px solid #09090b;
+  background: #262626;
+  border-radius: 10px;
+  border: 2px solid var(--background);
 }
 
-/* Hover sobre la barra */
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981; /* emerald-500 */
+  background: var(--primary); /* La barra brilla en azul al tocarla */
 }
