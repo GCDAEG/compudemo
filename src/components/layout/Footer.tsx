@@ -22,7 +22,7 @@ export function FooterSection() {
       {/* Luz de fondo sutil (Azul Computel) */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full pt-20 px-2 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto w-full pt-20  px-6 lg:px-12 relative z-10">
         {/* 1. CAJA CTA SUPERIOR - Hardware de Confianza */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 mb-24 shadow-2xl relative overflow-hidden group">
           <div className="text-center md:text-left max-w-xl relative z-10 space-y-3">

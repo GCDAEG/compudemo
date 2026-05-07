@@ -13,7 +13,7 @@ const HeroSection = () => {
       id="hero"
       className="bg-white relative w-full min-h-[calc(100vh-80px)] flex items-center overflow-hidden"
     >
-      <div className="container mx-auto max-w-7xl px-6 lg:px-12 flex flex-col lg:flex-row items-center justify-between gap-12">
+      <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12 px-6 lg:px-12">
         {/* TEXTO */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

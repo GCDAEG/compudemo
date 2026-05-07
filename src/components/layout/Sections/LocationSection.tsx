@@ -24,7 +24,7 @@ const ContactSection = () => {
       {/* Elementos decorativos sutiles */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+      <div className="container mx-auto  px-6 lg:px-12 max-w-7xl relative z-10">
         {/* ENCABEZADO ESTILO EDITORIAL */}
         <div className="mb-16 space-y-4">
           <motion.div

@@ -21,8 +21,8 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({
   const lenis = useLenis();
 
   return (
-    <div className="hidden lg:flex w-full h-full items-center px-8">
-      <div className="max-w-7xl w-full mx-auto flex justify-between items-center">
+    <div className="hidden lg:flex w-full h-full items-center  ">
+      <div className="max-w-7xl w-full mx-auto flex justify-between items-center px-6 lg:px-12">
         {/* LOGO: Aparece solo al scrollear */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
