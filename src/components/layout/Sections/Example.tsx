@@ -50,7 +50,7 @@ const ExampleMessage = () => {
             creador de
           </span>
           <a
-            href="https://tuwebhoy-chi.vercel.app/"
+            href="https://tuwebhoysi.com.ar/"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative w-48 h-12 transition-all duration-300 hover:brightness-125"
