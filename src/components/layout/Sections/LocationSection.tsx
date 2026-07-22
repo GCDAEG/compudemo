@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 const ContactSection = () => {
-  const WHATSAPP_NUMBER = "5493446000000"; // Número oficial Computel
+  const WHATSAPP_NUMBER = "5493446000000"; // Número oficial Compudemo
 
   return (
     <section
@@ -50,7 +50,7 @@ const ContactSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* COLUMNA IZQUIERDA: Horarios y Contacto Rápido */}
           <div className="lg:col-span-4 flex flex-col gap-6">
-            {/* Tarjeta de Horarios - Computel Style */}
+            {/* Tarjeta de Horarios - Compudemo Style */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -110,9 +110,9 @@ const ContactSection = () => {
               </button>
 
               <button
-                onClick={() =>
-                  (window.location.href = "mailto:contacto@computel.com.ar")
-                }
+                // onClick={() =>
+                //   (window.location.href = "mailto:contacto@Compudemo.com.ar")
+                // }
                 className="w-full bg-white/5 hover:bg-white/10 text-white p-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all border border-white/10 flex items-center justify-center gap-3"
               >
                 <Mail size={16} /> Enviar Mail
@@ -132,7 +132,7 @@ const ContactSection = () => {
             <div className="relative flex-1 bg-zinc-100 overflow-hidden group">
               <Image
                 src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=1200&auto=format&fit=crop"
-                alt="Computel Gualeguaychú"
+                alt="Compudemo Gualeguaychú"
                 fill
                 className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-1000 grayscale-[50%]"
               />
@@ -161,7 +161,7 @@ const ContactSection = () => {
                 <button
                   onClick={() =>
                     window.open(
-                      "https://maps.google.com/?q=Computel+Gualeguaychú",
+                      "https://maps.google.com/?q=Compudemo+Gualeguaychú",
                       "_blank",
                     )
                   }

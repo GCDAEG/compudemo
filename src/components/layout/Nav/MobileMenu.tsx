@@ -64,13 +64,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           />
 
           {/* Sheet - El Menú Lateral */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-dvh w-[85%] max-w-[320px] z-[1000] bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.1)] flex flex-col"
-          >
+          <div className="fixed top-0 right-0 h-dvh w-[85%] max-w-[320px] z-[1000] bg-white shadow-[-20px_0_40px_rgba(0,0,0,0.1)] flex flex-col">
             {/* Header del Sheet */}
             <div className="p-6 flex items-center justify-between border-b border-zinc-100">
               <div className="flex flex-col items-start gap-2">
@@ -80,8 +74,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                     className="relative w-40 h-10 block transition-opacity hover:opacity-80"
                   >
                     <Image
-                      src="/logo.webp"
-                      alt="Computel"
+                      src="/logo.png"
+                      alt="Compudemo"
                       fill
                       priority
                       className="object-contain "
@@ -109,7 +103,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                       onClick={() => handleScroll(sec.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-2xl text-sm font-bold transition-all ${
                         activeSection === sec.id
-                          ? "bg-blue-50 text-blue-600"
+                          ? "bg-blue-50 text-red-600"
                           : "text-zinc-500 hover:bg-zinc-50"
                       }`}
                     >
@@ -118,7 +112,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                         size={16}
                         className={
                           activeSection === sec.id
-                            ? "text-blue-600"
+                            ? "text-red-600"
                             : "text-zinc-300"
                         }
                       />
@@ -137,10 +131,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                 <Phone size={14} /> Contactar Ahora
               </button>
               <p className="text-[10px] text-center text-zinc-400 font-medium italic">
-                Computel — 15 años de trayectoria
+                Compudemo — 15 años de trayectoria
               </p>
             </div>
-          </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>
@@ -149,26 +143,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   return (
     <>
       {/* Botón Trigger (El que se queda en el Nav) */}
-      <div className="w-full h-full flex items-center px-4 lg:hidden">
+      <div className="w-full h-full flex items-center px-6 lg:hidden">
         <div className="w-full flex justify-between items-center">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isScrolled ? 1 : 0 }}
-            className="font-bold text-zinc-900 uppercase tracking-tighter"
-          >
+          <div className="font-bold text-zinc-900 uppercase tracking-tighter">
             <Link
               href="/"
               className="relative w-40 h-10 block transition-opacity hover:opacity-80"
             >
               <Image
-                src="/logo.webp"
-                alt="Computel"
+                src="/logo.png"
+                alt="Compudemo"
                 fill
                 priority
                 className="object-contain "
               />
             </Link>
-          </motion.div>
+          </div>
 
           <button
             onClick={() => setOpen(true)}

@@ -24,28 +24,20 @@ const DesktopMenu: React.FC<DesktopMenuProps> = ({
     <div className="hidden lg:flex w-full h-full items-center  ">
       <div className="max-w-7xl w-full mx-auto flex justify-between items-center px-6 lg:px-12">
         {/* LOGO: Aparece solo al scrollear */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{
-            opacity: isScrolled ? 1 : 0,
-            x: isScrolled ? 0 : -20,
-            pointerEvents: isScrolled ? "auto" : "none",
-          }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        >
+        <div>
           <Link
             href="/"
             className="relative w-40 h-10 block transition-opacity hover:opacity-80"
           >
             <Image
-              src="/logo.webp"
-              alt="Computel"
+              src="/logo.png"
+              alt="Compudemo"
               fill
               priority
               className="object-contain "
             />
           </Link>
-        </motion.div>
+        </div>
 
         <ul className="flex items-center gap-8">
           {sections.map((s) => (

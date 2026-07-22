@@ -13,13 +13,14 @@ import { useLenis } from "lenis/react";
 import { sections } from "@/lib/sections";
 import Link from "next/link";
 import Image from "next/image";
+import { siteConfig } from "@/lib/site/siteConfig";
 
 export function FooterSection() {
   const lenis = useLenis();
 
   return (
-    <footer className="bg-zinc-950 border-t border-zinc-900 pb-12 relative overflow-hidden">
-      {/* Luz de fondo sutil (Azul Computel) */}
+    <footer className="bg-zinc-100 border-t border-zinc-900 pb-12 relative overflow-hidden">
+      {/* Luz de fondo sutil (Azul Compudemo) */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto w-full pt-20  px-6 lg:px-12 relative z-10">
@@ -51,13 +52,13 @@ export function FooterSection() {
           <div className="flex flex-col gap-6">
             <Link
               href="/"
-              className="flex items-center gap-3 group w-full border"
+              className="flex items-center gap-3 group w-full "
               onClick={() => lenis?.scrollTo(0)}
             >
               <div className="relative w-full h-20">
                 <Image
-                  src="/logo.webp"
-                  alt="Computel"
+                  src="/logo.png"
+                  alt="Compudemo"
                   fill
                   className="object-contain"
                 />
@@ -153,8 +154,8 @@ export function FooterSection() {
         {/* 3. COPYRIGHT */}
         <div className="border-t border-zinc-900 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">
-            © {new Date().getFullYear()} Computel Argentina. Todos los derechos
-            reservados.
+            © {new Date().getFullYear()} {siteConfig.brand.name}. Todos los
+            derechos reservados.
           </p>
           <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
             <span>Powered by</span>

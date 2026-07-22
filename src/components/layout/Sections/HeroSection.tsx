@@ -11,7 +11,7 @@ const HeroSection = () => {
   return (
     <section
       id="hero"
-      className="bg-white relative w-full min-h-[calc(100vh-80px)] flex items-center overflow-hidden"
+      className="bg-white relative w-full  flex items-center overflow-hidden py-12"
     >
       <div className="container mx-auto max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-12 px-6 lg:px-12">
         {/* TEXTO */}
@@ -19,24 +19,23 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="z-10 w-full lg:w-1/2 flex flex-col gap-5"
+          className="z-10 w-full lg:w-1/2 flex flex-col gap-3 max-h-full "
         >
-          <div className="relative w-full">
+          {/* <div className="relative border h-20 w-1/2">
             <Image
-              src="/logo.webp"
-              alt="Computel"
-              width={300}
-              height={60}
+              src="/logo.png"
+              alt="Compudemo"
+              fill={true}
               priority
-              className="w-full lg:w-1/2 object-contain"
+              className=" lg:w-1/2 object-contain"
             />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-semibold text-zinc-900 leading-tight">
+          </div> */}
+          <h1 className="text-4xl md:text-4xl font-semibold text-zinc-900 leading-none">
             Todo en informática y tecnología
             <span className="block text-primary">en Gualeguaychú</span>
           </h1>
 
-          <p className="text-base md:text-lg text-zinc-600 max-w-md leading-relaxed">
+          <p className="text-base md:text-sm text-zinc-600 max-w-md leading-relaxed">
             Computadoras, componentes, periféricos y servicio técnico
             especializado. Asesoramiento real para que compres lo que necesitás.
           </p>

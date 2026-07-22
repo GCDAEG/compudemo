@@ -11,7 +11,7 @@ export default function WhatsAppChatInput() {
   const [message, setMessage] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const WHATSAPP_NUMBER = "5493446000000"; // Número oficial Computel
+  const WHATSAPP_NUMBER = "5493446123456789"; // Número oficial Compudemo
 
   const handleSend = () => {
     if (!message.trim()) return;

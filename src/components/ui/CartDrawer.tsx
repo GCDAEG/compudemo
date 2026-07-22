@@ -34,7 +34,7 @@ export const CartDrawer = () => {
 
   const { cart, removeFromCart, updateQuantity, totalPrice } = useCart();
 
-  const WHATSAPP_NUMBER = "5493446000000"; // Número de Computel Gualeguaychú
+  const WHATSAPP_NUMBER = "5493446123456789"; // Número de Compudemo Gualeguaychú
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export const CartDrawer = () => {
       )
       .join("\n");
 
-    const header = `💻 *NUEVO PEDIDO - COMPUTEL*`;
+    const header = `💻 *NUEVO PEDIDO - Compudemo*`;
     const deliveryInfo =
       deliveryType === "delivery"
         ? `🛵 *ENVÍO A DOMICILIO*\n📍 *DIRECCIÓN:* ${address}`
@@ -155,10 +155,9 @@ export const CartDrawer = () => {
                           <Trash2 size={18} />
                         </button>
                         <div className="relative size-20 rounded-xl overflow-hidden shrink-0 border border-zinc-100">
-                          <Image
+                          <img
                             src={item.image}
                             alt={item.title}
-                            fill
                             className="object-contain p-2"
                           />
                         </div>
@@ -312,7 +311,7 @@ export const CartDrawer = () => {
                 </div>
                 <div>
                   <p className="font-bold uppercase tracking-widest text-sm">
-                    Computel Gualeguaychú
+                    Compudemo Gualeguaychú
                   </p>
                   <p className="text-[10px] font-medium opacity-75 uppercase tracking-widest">
                     Canal de Ventas Oficial
